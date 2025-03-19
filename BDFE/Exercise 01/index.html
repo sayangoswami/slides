@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="../../dist/reveal.css" />
+    <link rel="stylesheet" href="../../dist/theme/tufte.css" id="theme" />
+    <link rel="stylesheet" href="../../plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="../../css/layout.css" />
+	<link rel="stylesheet" href="../../plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="../../plugin/chalkboard/style.css">
+
+
+
+    <script defer src="../../dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# SQL Brush-up
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Physical Data Independence
+
+- Ability to modify the physical storage details without affecting the schema
+- Changing the file organization, storage devices, or indexing methods
+- Optimise performance without impacting applications
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Data Shapes
+
+- Table - predefined structure, well-defined concepts, attributed, and domains
+- Cube - a table with added dimensions such as time, location, etc.
+- Graph - to represent highly interconnected data
+- Tree - hierarchical data
+- Vector - one-dimensional indexed elements
+
+*Can we store graph data in a relational database and vice versa?*
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Normal Forms
+
+- Rules on how data should be structured in a relational database
+- Each normal form addresses specific type of redundancy and anomalies
+- Eliminates duplication, ensures consistency, integrity
+- How are they related to *joins*?
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+- 1NF - Each column must contain atomic (indivisible) values, and each row must be unique
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->2NF - must be in 1NF, and all non-key attributes must depend on the entire primary key (not just part of it)
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->3NF - must be in 2NF, and all attributes must depend only on the primary key
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->BCNF - 3NF + every determinant must be a candidate key
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Where Normalisation Hurts
+
+Joins are expensive -
+
+- Read-heavy workloads
+
+- large-scale data
+
+- low-latency queries
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Warm-up
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Tables
+
+**Database Schema**
+
+| table_name  | column_name | data_type         | is_nullable | ordinal_position |
+| ----------- | ----------- | ----------------- | ----------- | ---------------- |
+| artists     | artist_id   | integer           | NO          | 1                |
+| artists     | name        | character varying | YES         | 2                |
+| artists     | realname    | text              | YES         | 3                |
+| artists     | profile     | text              | YES         | 4                |
+| artists     | url         | text              | YES         | 5                |
+| released_by | release_id  | integer           | NO          | 1                |
+| released_by | artist_id   | integer           | NO          | 2                |
+| releases    | release_id  | integer           | NO          | 1                |
+| releases    | released    | date              | NO          | 2                |
+| releases    | title       | text              | NO          | 3                |
+| releases    | country     | character varying | YES         | 4                |
+| releases    | genre       | character varying | NO          | 5                |
+| tracks      | release_id  | integer           | NO          | 1                |
+| tracks      | position    | character varying | YES         | 2                |
+| tracks      | title       | text              | YES         | 3                |
+| tracks      | duration    | integer           | YES         | 4                |
+| tracks      | track_id    | integer           | NO          | 5                |
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+`releases` table -
+
+| release_id | released   | title                       | country | genre      |
+| ---------- | ---------- | --------------------------- | ------- | ---------- |
+| 1          | 1999-03-01 | Stockholm                   | Sweden  | Electronic |
+| 2          | 1998-06-01 | Knockin' Boots Vol 2 Of 2   | Sweden  | Electronic |
+| 3          | 1999-07-13 | Profound Sounds Vol. 1      | US      | Electronic |
+| 5          | 1995-01-15 | Flowerhead                  | Germany | Electronic |
+| 6          | 1998-05-01 | Knockin' Boots (Vol 1 Of 2) | Sweden  | Electronic |
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+`artists` table -
+
+| artist_id | name                   | realname                      | profile | url  |
+| --------- | ---------------------- | ----------------------------- | ------- | ---- |
+| 1         | The Persuader          | Jesper Dahlbäck               | None    | None |
+| 2         | Mr. James Barth & A.D. | Cari Lekebusch & Alexi Delano | None    | None |
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+`released_by` table -
+
+| release_id | artist_id |
+| ---------- | --------- |
+| 1          | 1         |
+| 2          | 2         |
+| 3          | 3         |
+| 5          | 22        |
+| 6          | 2         |
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+`tracks` table
+
+| release_id | position | title       | duration | track_id |
+| ---------- | -------- | ----------- | -------- | -------- |
+| 1          | A        | Östermalm   | 285      | 1        |
+| 1          | B1       | Vasastaden  | 371      | 2        |
+| 1          | B2       | Kungsholmen | 169      | 3        |
+| 1          | C1       | Södermalm   | 338      | 4        |
+| 1          | C2       | Norrmalm    | 292      | 5        |
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Explore the Dataset
+
+- Which concepts are modelled in the dataset and how do they relate to each other?
+	
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->The data is stored as tables. Why was this shape chosen and why not the other shapes?
+	
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->In which normal forms are the corresponding relations?
+	
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->What are the efficiency trade-offs from adding an `artist_id` and `artist_name` directly to the `releases` table? Hints:
+    - &shy;<!-- .element: class="fragment" data-fragment-index="4" -->What are some typical queries that would benefit from this change?
+    - &shy;<!-- .element: class="fragment" data-fragment-index="5" -->How often do we need to update artists?
+	
+- &shy;<!-- .element: class="fragment" data-fragment-index="6" -->What potential problems could result from adding this redundancy?
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q1.
+
+**Retrieve all artists with the name of 'Madonna'.**
+
+```sql
+select * from artists where name = 'Madonna'
+```
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q2.
+
+**List the titles of all releases by that artist in alphabetical order.**
+
+Here a single table does not have all the necessary info. Infact, we need to **join/denormalise** 3 tables - `artists`, `released_by`, and `releases`
+
+First, lets join `artists` and `released_by` using the `artist_id` column, and filter by artist name.
+
+```sql
+select * from 
+artists join released_by using(artist_id) 
+where artists.name = 'Madonna'
+```
+
+You can see how the table is denormalised now - it contains lots of duplication.
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Next, join this table with `releases` using the `release_id` column
+
+```sql
+select * from 
+artists join released_by using(artist_id) join releases using(release_id)
+where artists.name = 'Madonna'
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+We only need the title, and in ascending order.
+
+```sql
+select title from 
+artists join released_by using(artist_id) join releases using(release_id)
+where artists.name = 'Madonna'
+order by title
+```
+
+You can see there there are quite a few duplications here. **Why?**
+
+```sql
+select * from releases where title = 'American Life' 
+limit 10
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+To remove duplicates, we use the `distinct` keyword -
+
+```sql
+select distinct title from 
+artists join released_by using(artist_id) join releases using(release_id)
+where artists.name = 'Madonna'
+order by title
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q3.
+
+**List the titles of all releases by that artist that contain less than 5 tracks.**
+
+First, lets denormalise -
+```sql
+select * from 
+releases 
+join tracks using (release_id) 
+join released_by using (release_id) 
+join artists using (artist_id)
+limit 10
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Then filter by name -
+```sql
+select * from 
+releases 
+join tracks using (release_id) 
+join released_by using (release_id) 
+join artists using (artist_id)
+where name = 'Madonna'
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Now, group by release_id
+```sql
+select releases.title, count(tracks) as n_tracks from 
+releases 
+join tracks using (release_id) 
+join released_by using (release_id) 
+join artists using (artist_id)
+where name = 'Madonna'
+group by release_id    
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Finally, filter by count
+```sql
+select releases.title, count(tracks) as n_tracks from 
+releases 
+join tracks using (release_id) 
+join released_by using (release_id) 
+join artists using (artist_id)
+where name = 'Madonna'
+group by release_id
+having count(tracks) < 5
+limit 5
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q4.
+
+**What are the top 10 artists with the most releases?**
+
+Denormalise
+```sql
+select * from 
+releases 
+join released_by using (release_id) 
+join artists using (artist_id)
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Get the artist id with the highest number of releases
+```sql
+select artist_id, count(release_id) as n_releases from 
+releases 
+join released_by using (release_id) 
+join artists using (artist_id)
+    group by artist_id
+    order by n_releases desc
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+To get the artist name, we need to group by both `artist_id` and `name`
+```sql
+select artist_id, name, count(release_id) as n_releases from 
+releases 
+join released_by using (release_id) 
+join artists using (artist_id)
+    group by artist_id, name
+    order by n_releases desc
+limit 5
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q5.
+
+**How many artists have more releases than the average number of releases per artists (who have at least 1 release)**
+
+Denormalise -
+```sql
+select * from 
+releases 
+join released_by using (release_id) 
+join artists using (artist_id)
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Group releases by artist and find counts
+```sql
+select artist_id, count(*) as n_releases from 
+releases 
+join released_by using (release_id) 
+join artists using (artist_id)
+group by artist_id
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Avg. number of release per artist -
+```sql
+select avg(n_releases) from
+(select artist_id, count(*) as n_releases from 
+releases 
+join released_by using (release_id) 
+join artists using (artist_id)
+group by artist_id)
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Artists with number of releases greater than the average -
+```sql
+select artist_id 
+from xx
+where n_releases > yy
+
+-- where xx is (select artist_id, count(*) as n_releases from 
+--				releases 
+--				join released_by using (release_id) 
+--				join artists using (artist_id)
+--				group by artist_id)
+-- and yy is select avg(n_releases) from xx
+```
+
+
+Finally, count -
+```sql
+select count(*) from (
+select artist_id 
+from xx
+where n_releases > yy
+)
+```
+</div></script></section></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+### Q6.
+
+**What are the names and IDs of the artists that have both a release with the genre 'Pop' _and_ a release with the genre 'Classical'? Give a query that uses `INTERSECT` and one that uses `EXISTS`.**
+
+Using `intersect` -
+```sql
+select artist_id, name from (
+	(select artist_id, name from releases 
+	join released_by using (release_id) 
+	join artists using (artist_id)
+	where genre = 'Pop')
+intersect
+	(select artist_id, name from releases 
+	join released_by using (release_id) 
+	join artists using (artist_id)
+	where genre = 'Classical')
+)
+limit 5
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Using `exists` -
+```sql
+select artist_id, name from artists a1
+where exists (
+    SELECT *
+    FROM artists a2
+    JOIN released_by USING(artist_id)
+    JOIN releases USING(release_id)
+    WHERE releases.genre = 'Pop'
+    and a1.artist_id = a2.artist_id
+) and exists (
+    SELECT *
+    FROM artists a2
+    JOIN released_by USING(artist_id)
+    JOIN releases USING(release_id)
+    WHERE releases.genre = 'Classical'
+    and a1.artist_id = a2.artist_id
+)
+limit 10
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+# Duration vs Genre
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q7.
+
+**Write a query which finds all of the distinct genres**
+
+```sql
+select distinct genre from releases limit 10
+```
+</div></script></section><section ><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q8.
+
+**Write a query to calculate the average track count per genre**
+
+Denormalise -
+```sql
+select * from releases join tracks using (release_id) 
+limit 10
+```
+
+Group by `release_id` and `genre` and count number of tracks -
+```sql
+select release_id, genre, count(track_id) 
+from releases join tracks using (release_id) 
+group by release_id, genre
+limit 10
+```
+</div></script></section><section data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+Now, group by genre and average -
+```sql
+select genre, avg(track_counts.count) from (
+    select release_id, genre, count(track_id) 
+	from releases join tracks using (release_id) 
+	group by release_id, genre
+) as track_counts
+group by genre
+limit 10
+```
+</div></script></section></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## Q9.
+
+**Write a query to calculate the average duration per genre. Your result should have two attributes: `genre` and `avg_duration`.**
+
+Like before, group by `genre`, and find average -
+```sql
+select genre, avg(duration) as avg_duration
+from releases join tracks using (release_id) 
+group by genre
+limit 10
+```
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 700px; width: 1100px; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+## SQL language features and query patterns
+
+- What patterns did you use in many of the queries above?
+    
+- Do you remember the theory behind them?
+    
+- What makes SQL a declarative language and what advantages does that have?
+    
+- What makes SQL a functional language and what advantages does that have?
+</div></script></section></div>
+    </div>
+
+    <script src="../../dist/reveal.js"></script>
+
+    <script src="../../plugin/markdown/markdown.js"></script>
+    <script src="../../plugin/highlight/highlight.js"></script>
+    <script src="../../plugin/zoom/zoom.js"></script>
+    <script src="../../plugin/notes/notes.js"></script>
+    <script src="../../plugin/math/math.js"></script>
+	<script src="../../plugin/mermaid/mermaid.js"></script>
+	<script src="../../plugin/chart/chart.min.js"></script>
+	<script src="../../plugin/chart/plugin.js"></script>
+	<script src="../../plugin/customcontrols/plugin.js"></script>
+	<script src="../../plugin/chalkboard/plugin.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealChalkboard, 
+        ],
+
+
+    	allottedTime: 120 * 1000,
+
+		mathjax3: {
+			mathjax: '../../plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":1100,"height":700,"margin":0.04,"controls":true,"progress":true,"slideNumber":true,"transition":"fade","transitionSpeed":"default"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
